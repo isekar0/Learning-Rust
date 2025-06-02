@@ -1,0 +1,12 @@
+[package]
+name = "Learning-Rust"
+version = "0.1.0"
+edition = "2024"
+
+[workspace]
+members = [
+  "hello-rust", "guessing-game", 
+  "fibonacci", "vectors", "printing", "structs", "rustlings",
+]
+
+[dependencies]
