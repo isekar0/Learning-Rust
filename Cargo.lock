@@ -32,13 +32,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "guessing-game"
-version = "0.1.0"
-dependencies = [
- "rand",
-]
-
-[[package]]
 name = "hello-rust"
 version = "0.1.0"
 

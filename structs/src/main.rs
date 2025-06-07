@@ -1,5 +1,5 @@
 const GRAVITY: f32 = -9.81;
-const DRAG: f32 = 0.2;
+const DRAG: f32 = 0.005;
 
 struct Window {
     width: u32,
@@ -8,17 +8,20 @@ struct Window {
 
 struct Particle {
     radius: u32,
-    mass: u32,
+    // mass: u32,
     position: [f32; 2],
     velocity: [f32; 2],
 }
 
-fn particle_create(radius: u32, mass: u32) -> Particle {
+fn particle_create(
+    radius: u32,
+    // mass: u32
+) -> Particle {
     Particle {
         radius,
-        mass,
-        position: [0f32; 2],
-        velocity: [0f32; 2],
+        // mass,
+        position: [50f32; 2],
+        velocity: [5f32; 2],
     }
 }
 
@@ -28,7 +31,7 @@ fn particle_update_velocity(particle_: &mut Particle) {
         particle_.velocity[component] *= 1f32 - DRAG;
 
         if component == 1 {
-            particle_.velocity[component] += GRAVITY;
+            particle_.velocity[component] += GRAVITY * 1f32 / 60f32;
         }
     }
 }
@@ -51,33 +54,26 @@ fn particle_collision_wall_detect(particle_: &mut Particle, window_: &Window) {
     let _wid: f32 = window_.width as f32;
     let _hei: f32 = window_.height as f32;
 
-    let mut _collided: bool = false;
+    let mut _collided: &bool = &false;
 
-    match particle_.position[0] {
-        f32::MIN..0f32 => {
-            particle_collision_wall_resolve(particle_, 0, "down_left");
-            _collided = true;
-        }
-        wid if (wid..=f32::MAX).contains(&wid) => {
-            particle_collision_wall_resolve(particle_, 0, "up_right");
-            _collided = true;
-        }
-        _ => return,
+    if particle_.position[0] < 0f32 {
+        particle_collision_wall_resolve(particle_, 0, "down_left");
+        _collided = &true;
+    }
+    if particle_.position[0] > _wid {
+        particle_collision_wall_resolve(particle_, 0, "up_right");
+        _collided = &true;
+    }
+    if particle_.position[1] < 0f32 {
+        particle_collision_wall_resolve(particle_, 1, "down_left");
+        _collided = &true;
+    }
+    if particle_.position[1] > _hei {
+        particle_collision_wall_resolve(particle_, 1, "up_right");
+        _collided = &true;
     }
 
-    match particle_.position[1] {
-        f32::MIN..0f32 => {
-            particle_collision_wall_resolve(particle_, 1, "down_left");
-            _collided = true;
-        }
-        hei if (hei..=f32::MAX).contains(&hei) => {
-            particle_collision_wall_resolve(particle_, 1, "up_right");
-            _collided = true;
-        }
-        _ => return,
-    }
-
-    if _collided == true {
+    if *_collided {
         println!("Pling! Particle hit the wall")
     }
 }
@@ -93,24 +89,34 @@ fn particle_status_update(particle_: &Particle) {
 
     assert!(running_speed >= 0f32);
     println!(
-        "Currently at {:?} with a speed of {running_speed}",
-        particle_.position
+        "Currently at {:?} with a speed of {x_comp} in x direction and {y_comp} in y direction",
+        particle_.position,
+        x_comp = particle_.velocity[0],
+        y_comp = particle_.velocity[1]
     )
 }
 
 fn main() {
-    let mut particle_: Particle = particle_create(10, 10);
+    let mut particle_: Particle = particle_create(
+        10, // , 10
+    );
 
     let window_: Window = Window {
-        width: 500,
-        height: 500,
+        width: 100,
+        height: 100,
     };
 
-    loop {
-        particle_update_velocity(&mut particle_);
-        particle_collision_wall_detect(&mut particle_, &window_);
+    let mut counter: u32 = 0;
+
+    // let mut previous_time = std::time::Instant::now();
+    while counter < 50 {
         particle_status_update(&particle_);
 
-        std::thread::sleep(std::time::Duration::from_secs(1));
+        particle_update_velocity(&mut particle_);
+        particle_collision_wall_detect(&mut particle_, &window_);
+
+        std::thread::sleep(std::time::Duration::from_millis(100));
+
+        counter += 1;
     }
 }

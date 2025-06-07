@@ -5,7 +5,7 @@ edition = "2024"
 
 [workspace]
 members = [
-  "hello-rust", "guessing-game", 
+  "hello-rust",  
   "fibonacci", "vectors", "printing", "structs", "rustlings",
 ]
 
