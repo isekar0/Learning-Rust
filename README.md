@@ -6,7 +6,7 @@ Repo where I can upload code and notes as I learn Rust
 
 ### Chapter 1
 
-##### Funcs and macros
+##### Functions and macros
 -> "functions" ending with "!" are actually macros? (See chapter 20 for more on macros)
 
 ##### Building
@@ -22,9 +22,9 @@ Repo where I can upload code and notes as I learn Rust
 -> The formatting seems to be a mix of Python's f-strings and C's printf
 e.g. println!("{variable_name_initialized_above} = {variable_here}", function());
 
-Status update: Just used a dependancy for the first time, nice.
+Status update: Just used a dependency for the first time, nice.
 
-Cargo.lock is where dependencies get frozen, only updated when you explicitely change the version in Cargo.toml, or use "$ cargo update"
+Cargo.lock is where dependencies get frozen, only updated when you explicitly change the version in Cargo.toml, or use "$ cargo update"
 
 ##### Ranges
 -> A range expression can take the form of start..=stop which is inclusive on the lower and upper bounds
@@ -38,8 +38,8 @@ Cargo.lock is where dependencies get frozen, only updated when you explicitely c
 -> Rust has both a strong, static type system while also being able to infer types 
 
 ##### Rusty coding style
--> According to rust documentation, it is more rusty to write a function which only returns an expression, as in it doesn't do any other functionality, as a oneliner, omitting the return keyword and even semicolon! Wow, pretty crazy... but I wish to be rusty :3
-    -> Okay, maybe to correct this, but Rust is an "expression" based language (?), so for example, let x = 5; is a statement, and statements don't return values and end with a semicolon, whileas expressions return values (and don't always end in semicolons?), that's why if it's the last line in a function with a return type, you don't include the semicolon, if you did, it wouldn't return anything, that's what the error message means with '()', that's the unit type which is a statement.
+-> According to rust documentation, it is more rusty to write a function which only returns an expression, as in it doesn't do any other functionality, as a one-liner, omitting the return keyword and even semicolon! Wow, pretty crazy... but I wish to be rusty :3
+    -> Okay, maybe to correct this, but Rust is an "expression" based language (?), so for example, let x = 5; is a statement, and statements don't return values and end with a semicolon, while as expressions return values (and don't always end in semicolons?), that's why if it's the last line in a function with a return type, you don't include the semicolon, if you did, it wouldn't return anything, that's what the error message means with '()', that's the unit type which is a statement.
 
 ##### Loops
 -> literal "loop" keyword. I guess they just made while (true) {...} have less boilerplate? 
@@ -53,11 +53,11 @@ Cargo.lock is where dependencies get frozen, only updated when you explicitely c
 -> Unlike Python, tuples have the nature of being immutable in terms of size, while the mutability of their elements is dependant on Rust's mutability 
 -> Elements of a tuple are accessed like that of a struct rather than a list
 e.g. 
-tup_varialbe.0 
+tup_variable.0 
 
 ##### Arrays
 -> Like C, they are fixed in size and all elements are of the same type
--> Always on the stack? In comparision, vectors can grow and shrink but are always on the heap?
+-> Always on the stack? In comparison, vectors can grow and shrink but are always on the heap?
 -> Can be defined without type or size, if all elements are explicitly initialized, or can be declared with a type and size, or can be declared by the sole unique element and the size of the array
 e.g.
 let a = [1, 2, 3];
@@ -87,7 +87,7 @@ which will result in x having a value of 20
 --> return can be used in place of break, and thusly the semicolon is optional for both cases
 
 **Loop Labels**
---> You can label loops with 'name: loop {...} (notice the single apostraphe on the left hand-side of the loop name). This can then be used in the loop to, for example break the outer body of the loop from within another loop.
+--> You can label loops with 'name: loop {...} (notice the single apostrophe on the left hand-side of the loop name). This can then be used in the loop to, for example break the outer body of the loop from within another loop.
 e.g. 
 let mut count = 0;
     'counting_up: loop {
@@ -117,7 +117,7 @@ for x in (1..5) {...}
 ### Chapter 4
 
 ##### Ownership
--> Unlike low-level languages, memory cannot be thought of as an array of bytes, since Rust does not allow that level of manipualtion
+-> Unlike low-level languages, memory cannot be thought of as an array of bytes, since Rust does not allow that level of manipulation
 Box
 -> A way of allocating memory on the heap
 e.g.
@@ -228,7 +228,7 @@ fn main() {
 }
 ---> This prevents data races and memory corruption
 
-Data races occur when these 3 conditions are satisified
+Data races occur when these 3 conditions are satisfied
     1) Two or more pointers access the same data at the same time. 
     2) At least one of the pointers is being used to write to the data. 
     3) There’s no mechanism being used to synchronize access to the data. 
@@ -251,3 +251,92 @@ The Rules of References
 
 #### Slices 
 Referencing a contiguous sequence of elements.
+
+Created with [starting_index..ending_index]
+
+e.g. 
+fn main() {
+    let s = String::from("hello world"); 
+    
+    let hello = &s[0..5]; // Which is equal to ... [..5] i.e. if starting_index = 0
+    let world = &s[6..11]; // Which is equal to ... [6..] i.e. if ending_index = len
+}
+
+N O T E  
+String slice range indices must occur at valid UTF-8 character boundaries. If you  attempt to create a string slice in the middle of a multibyte character, your program  will exit with an error.
+
+### Chapter 5
+
+#### Structs
+
+The names of the thingies in a struct is "fields"
+
+Either the entire instance of a struct is mutable or immutable, and all fields will follow suit.
+
+Field init shorthand syntax
+-> If you initialize an instance of a struct with a variable with the same name as the field it is being assigned to, you can omit most of the assignment and just write the name alone.
+
+Struct update syntax
+-> when creating a new instance which shares fields with another, first declare any unique fields as usual, then use "..other_instance_name"
+-> Because this still uses "=", it moves the data from the previous instance to the new one, so the previous one cannot be used anymore if heap-allocated data was moved (if only i32, u32, (types that implement the copy trait), were moved then the previous one can still be used, but if it included data that needs to be dropped at the end of its scope, then ownership has to be transferred to the new instance during movement)
+
+**Tuple structs** 
+-> Merging the ability to give something a name from the struct type and having nameless fields from the tuple type
+e.g.
+struct Color(u8, u8, u8);
+The fields only have a type, like a tuple, but the "object"(?) has a name which can be used to create instances of it
+
+**Unit-like structs**
+-> Structs without fields
+-> Behave similarly to the unit type ()
+-> Used when you want to implement a trait on some type but don't have any data that you want to store in the type itself
+e.g.
+struct AlwaysEqual;
+
+fn main() {
+    let subject = AlwaysEqual;
+}
+
+##### Ownership of struct data
+-> A struct requires either owned types like String, or a lifetime specifier for references like &str
+
+##### Derived traits
+an example of which is 
+#[derive(debug)] // outer attribute which opts in for Rust's debug functionality for this struct type, Rust derives a debug trait for this struct type
+struct ...
+--> Allows you to use println!("{:?}", ...) to print out the struct, 
+---> Although it's better to use the dbg! macro since it returns ownership of the value (and also returns to stderr instead of stdout)
+    e.g. 
+    ...
+    let rectangle = Rectangle {
+        width: dbg! (30 * scale), // evaluates the expression, displays the result in stderr, and returns ownership of the result
+        height : 50,
+    };
+    
+##### Associated Functions
+-> Defined within the context of a struct, enum, or a trait object
+-> implementations of a struct
+-> May or may not have the self parameter, if they do they are a method. A common example of an associated function that doesn't have self as an input parameter is a constructor
+--> Which then uses the double colon :: syntax 
+
+###### Methods
+-> Like Python, their first parameter is self
+e.g.
+struct Rectangle { 
+    width: u32,
+    height: u32,
+}
+
+impl Rectangle { // implementation for the Rectangle struct, can hold multiple definitions inside
+    fn calc_area(&self) -> u32 { // &self is shorthand for self : &Self where the Self type is an alias for the type the implementation is for 
+        self.width * self.height
+    }
+}
+
+...
+--> Methods can also take ownership of self, borrow immutably, or borrow mutably
+
+**Automatic (de)referencing**
+-> Unlike C/C++ where you need to use object->something() (i.e. (*object).something()), Rust automatically adds in the &, &mut, or * to match the signature of the method 
+
+### Chapter 6
